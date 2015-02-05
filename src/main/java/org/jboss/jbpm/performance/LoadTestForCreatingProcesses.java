@@ -31,17 +31,19 @@ import com.jayway.restassured.response.Response;
 import com.jayway.restassured.specification.RequestSpecification;
 
 public class LoadTestForCreatingProcesses {
+  //========== CONFIGURATION ============
 	final String server = "http://localhost:8080";
 	final String context = "business-central";
 	final String processId="simple-order-process";
 	final String processCreate = "rest/runtime/dl-customer-order-service:dl-customer-order-service:1.1/process/"+processId+"/start?map_amount=1";
 	final String username="mat";
 	final String password="adminmonk3y!";
+	final static int numberOfThreads=10;
+	final static int numberOfProcessesToCreate=2000;
+  //=====================================
 
 	public static void main(String[] s) throws Exception {
-		new LoadTestForCreatingProcesses().run(10, 2000);
-//		new LoadTestForCreatingProcesses().run(20, 2000);
-//		new LoadTestForCreatingProcesses().run(40, 2000);
+		new LoadTestForCreatingProcesses().run(numberOfThreads, numberOfProcessesToCreate);
 	}
 
 	//http://localhost:8080/business-central/rest/runtime/dl-customer-order-service:dl-customer-order-service:1.0/process/order-process/start?map_amount=20
@@ -88,12 +90,12 @@ public class LoadTestForCreatingProcesses {
 	    }
 	}
 	
-	public void run(int threads, int iterations) throws Exception {
-		int count=iterations;
+	public void run(int threads, int numberOfProcessesToCreate) throws Exception {
+		int count=numberOfProcessesToCreate;
 		List<FutureTask<Void>> tasks = new ArrayList<FutureTask<Void>>();
 		ExecutorService executor = Executors.newFixedThreadPool(threads);
 
-		for (int i = 0; i < iterations; i++) {
+		for (int i = 0; i < numberOfProcessesToCreate; i++) {
 			tasks.add(new MyFutureTask<Void>(new Callable<Void>() {
 				public Void call() throws Exception {
 					new LoadTestForCreatingProcesses().createProcess();
@@ -119,7 +121,7 @@ public class LoadTestForCreatingProcesses {
 //			System.out.print(".");
 		}
 		executor.shutdown();
-		System.out.println("Creating "+iterations+" processes with "+threads+" threads took "+new DecimalFormat("###,#00").format(System.currentTimeMillis()-start)+" ms");
+		System.out.println("Creating "+numberOfProcessesToCreate+" processes with "+threads+" threads took "+new DecimalFormat("###,#00").format(System.currentTimeMillis()-start)+" ms");
 	}
 	
 }

@@ -33,22 +33,20 @@ import com.jayway.restassured.specification.RequestSpecification;
  * @author mallen
  */
 public class LoadTestForCreatingProcessesWithHumanTasks {
+  //========== CONFIGURATION ============
   final String server = "http://localhost:9080";
 	final String context = "business-central";
 	final String username = "mat";
 	final String password = "adminmonk3y!";
-//	final String processCreate = "rest/runtime/dl-customer-order-service:dl-customer-order-service:1.1/process/simple-order-process/start?map_amount=";
-//	final String processCreate = "rest/runtime/dl-customer-order-service:dl-customer-order-service:1.1/process/order-process/start?map_amount=";
+  final static int processesToCreate=500;
+  final static int threadsToUse=20;
+  //=====================================
 	final String processCreate = "rest/runtime/com.customer.esb:new-order-service:8.0.0/process/order-process/start?map_amount=";
 	final String taskQuery     = "rest/task/query?taskOwner=mat";
 	final String taskStart     = "rest/task/%s/start";
 	final String taskComplete  = "rest/task/%s/complete";//?map_approved=True";
-	static final DecimalFormat df=new DecimalFormat("###,#00");
+	final static DecimalFormat df=new DecimalFormat("###,#00");
 
-	// ===============================
-	static int processesToCreate=500;
-	static int threadsToUse=20;
-	// ===============================
 	// standalone.sh -Dorg.kie.executor.pool.size=5
 	public static void main(String[] s) throws Exception {
 		new LoadTestForCreatingProcessesWithHumanTasks().cleanupThreaded(threadsToUse);
